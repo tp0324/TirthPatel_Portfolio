@@ -1,0 +1,263 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.3">
+  <diagram name="Page-1" id="l3fG9PVBow_HiaGDYJef">
+    <mxGraphModel dx="736" dy="463" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-1" value="JobSeeker" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=70;" vertex="1" parent="1">
+          <mxGeometry x="20" y="20" width="120" height="1390" as="geometry" />
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-2" value="Employer" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="220" y="20" width="150" height="1360" as="geometry" />
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-3" value="Administrator" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="420" y="20" width="150" height="1690" as="geometry" />
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-4" value="System" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;container=1;dropTarget=0;collapsible=0;recursiveResize=0;outlineConnect=0;portConstraint=eastwest;newEdgeStyle={&quot;edgeStyle&quot;:&quot;elbowEdgeStyle&quot;,&quot;elbow&quot;:&quot;vertical&quot;,&quot;curved&quot;:0,&quot;rounded&quot;:0};size=65;" vertex="1" parent="1">
+          <mxGeometry x="678" y="20" width="161" height="1690" as="geometry" />
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-5" value="Register &amp; Create Profile" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="123" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-6" value="Confirm Registration" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="171" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-7" value="Login" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="219" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-8" value="Show Dashboard" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="267" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-9" value="Search Job Listings" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="315" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-10" value="Display Available Jobs" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="363" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-11" value="Apply for Job" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="411" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-12" value="Confirm Application" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="459" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-14" value="Register &amp; Create Company Profile" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="520" />
+            </Array>
+            <mxPoint x="294.5" y="520" as="sourcePoint" />
+            <mxPoint x="758" y="520" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-15" value="Confirm Company Registration" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="580" />
+            </Array>
+            <mxPoint x="758" y="580" as="sourcePoint" />
+            <mxPoint x="294.5" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-16" value="Post Job Listing" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="630" />
+            </Array>
+            <mxPoint x="294.5" y="630" as="sourcePoint" />
+            <mxPoint x="758" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-17" value="Confirm Job Posted" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="690" />
+            </Array>
+            <mxPoint x="758" y="690" as="sourcePoint" />
+            <mxPoint x="294.5" y="690" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-18" value="Review Applications" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="740" />
+            </Array>
+            <mxPoint x="294.5" y="740" as="sourcePoint" />
+            <mxPoint x="758" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-19" value="Show Applicant Profiles" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="795" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-20" value="Select Candidate for Interview" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-2" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="843" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-21" value="Send Interview Invitation" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="891" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-22" value="Attend Interview" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="939" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-23" value="Notify Interview Attended" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="987" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-24" value="Make Job Offer" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-2" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="1035" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-25" value="Send Job Offer" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="1083" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-26" value="Accept/Reject Offer" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="1131" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-27" value="Provide Feedback" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-1" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="435" y="1179" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-28" value="Share Feedback" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="1227" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-29" value="Provide Feedback" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-2" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="535" y="1275" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-30" value="Share Feedback" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="1323" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-31" value="Notify Offer Rejected" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="538" y="1371" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-32" value="End Process or Continue Job Search" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="438" y="1419" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-33" value="Monitor User Accounts" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-3" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="635" y="1467" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-34" value="User Activity Reports" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="638" y="1515" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-35" value="Address Technical Issues" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-3" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="635" y="1563" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-36" value="System Logs" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="638" y="1611" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-37" value="Provide User Support" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-3" target="vaAI6F_FjHQX-OCpIQ8t-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="635" y="1659" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vaAI6F_FjHQX-OCpIQ8t-38" value="Support Tools / Responses" style="verticalAlign=bottom;edgeStyle=elbowEdgeStyle;elbow=vertical;curved=0;rounded=0;dashed=1;dashPattern=2 3;endArrow=block;" edge="1" parent="1" source="vaAI6F_FjHQX-OCpIQ8t-4" target="vaAI6F_FjHQX-OCpIQ8t-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="638" y="1707" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
