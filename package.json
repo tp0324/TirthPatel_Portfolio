@@ -1,0 +1,26 @@
+{
+  "name": "university7",
+  "version": "1.0.0",
+  "description": "COSC 3380 • University 7 Web App — PostgreSQL + JavaScript",
+  "main": "server.js",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.18.2",
+    "pg": "^8.11.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "author": "Team 7, COSC 3380, University of Houston",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  }
+}
