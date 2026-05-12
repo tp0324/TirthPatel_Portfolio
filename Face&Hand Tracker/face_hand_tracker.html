@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Face + Hand AI Tracker</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#000; overflow:hidden; width:100vw; height:100vh; font-family:system-ui,sans-serif; }
+#container { position:relative; width:100vw; height:100vh; }
+#video { position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+#canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
+
+#overlay {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  background:#000; z-index:50;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;
+}
+#overlay h1 { color:#00ff66; font-size:22px; font-weight:500; letter-spacing:0.05em; }
+#overlay p { color:#666; font-size:14px; }
+.spin { width:40px; height:40px; border:2px solid rgba(0,255,102,0.2); border-top-color:#00ff66; border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+#hud {
+  position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+  background:rgba(0,0,0,0.6); border:1px solid rgba(0,255,102,0.3);
+  border-radius:99px; padding:8px 24px;
+  color:#00ff66; font-size:13px; font-family:monospace; z-index:10;
+  white-space:nowrap; letter-spacing:0.05em;
+}
+#top-hud {
+  position:absolute; top:16px; left:16px; z-index:10;
+  color:#00ff66; font-family:monospace; font-size:12px; letter-spacing:0.04em;
+  text-shadow: 0 0 8px #00ff66;
+}
+#top-hud div { margin-bottom:4px; }
+
+#controls {
+  position:absolute; top:16px; right:16px; z-index:10;
+  background:rgba(0,0,0,0.65); border:1px solid rgba(0,255,102,0.25);
+  border-radius:10px; padding:12px 16px; min-width:180px;
+}
+#controls label { color:#999; font-size:11px; font-family:monospace; display:block; margin-bottom:3px; }
+#controls select, #controls input[type=range] {
+  background:rgba(0,255,102,0.07); border:1px solid rgba(0,255,102,0.2);
+  color:#00ff66; font-size:11px; border-radius:5px;
+  padding:3px 6px; width:100%; margin-bottom:10px;
+  font-family:monospace;
+}
+</style>
+</head>
+<body>
+<div id="container">
+  <div id="overlay">
+    <div class="spin"></div>
+    <h1>AI FACE + HAND TRACKER</h1>
+    <p id="load-txt">Loading models...</p>
+  </div>
+
+  <video id="video" autoplay playsinline muted></video>
+  <canvas id="canvas"></canvas>
+
+  <div id="top-hud">
+    <div id="hud-hands">HANDS: 0</div>
+    <div id="hud-face">FACE: —</div>
+    <div id="hud-gesture">GESTURE: —</div>
+  </div>
+
+  <div id="controls">
+    <label>LINE STYLE</label>
+    <select id="lineStyle">
+      <option value="spiderweb">Spiderweb (like video)</option>
+      <option value="skeleton">Skeleton only</option>
+      <option value="rays">Finger rays</option>
+      <option value="all">All effects</option>
+    </select>
+    <label>COLOR</label>
+    <select id="colorScheme">
+      <option value="green">Matrix green</option>
+      <option value="cyan">Cyber cyan</option>
+      <option value="purple">Purple</option>
+      <option value="white">White</option>
+    </select>
+    <label>GLOW INTENSITY</label>
+    <input type="range" id="glowSlider" min="1" max="20" value="10" step="1">
+    <label>LINE THICKNESS</label>
+    <input type="range" id="thickSlider" min="1" max="6" value="2" step="0.5">
+  </div>
+
+  <div id="hud">INITIALIZING...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+
+<script>
+const video = document.getElementById('video');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let W, H;
+
+function resize() {
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const COLORS = {
+  green:  { main:'#00ff66', glow:'rgba(0,255,102,', dim:'rgba(0,255,102,0.15)' },
+  cyan:   { main:'#00ffff', glow:'rgba(0,255,255,', dim:'rgba(0,255,255,0.15)' },
+  purple: { main:'#bf80ff', glow:'rgba(191,128,255,', dim:'rgba(191,128,255,0.15)' },
+  white:  { main:'#ffffff', glow:'rgba(255,255,255,', dim:'rgba(255,255,255,0.1)' },
+};
+
+function getColor() { return COLORS[document.getElementById('colorScheme').value] || COLORS.green; }
+function getGlow() { return parseInt(document.getElementById('glowSlider').value); }
+function getThick() { return parseFloat(document.getElementById('thickSlider').value); }
+function getStyle() { return document.getElementById('lineStyle').value; }
+
+let handsData = [];
+let faceData = null;
+
+const FACE_OUTLINE = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109,10];
+const FACE_LEFT_EYE = [33,7,163,144,145,153,154,155,133,173,157,158,159,160,161,246,33];
+const FACE_RIGHT_EYE = [362,382,381,380,374,373,390,249,263,466,388,387,386,385,384,398,362];
+const FACE_LIPS_OUTER = [61,146,91,181,84,17,314,405,321,375,291,409,270,269,267,0,37,39,40,185,61];
+const FACE_NOSE = [1,2,98,97,2,326,327,2,168,6,197,195,5,4];
+
+function mirrorX(x) { return W - x * W; }
+function scalY(y) { return y * H; }
+
+function drawGlowLine(x1, y1, x2, y2, color, glowSize, thickness) {
+  ctx.save();
+  ctx.shadowColor = color.main;
+  ctx.shadowBlur = glowSize;
+  ctx.strokeStyle = color.main;
+  ctx.lineWidth = thickness;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  ctx.restore();
+}
+
+function drawGlowDot(x, y, r, color, glowSize) {
+  ctx.save();
+  ctx.shadowColor = color.main;
+  ctx.shadowBlur = glowSize * 1.5;
+  ctx.fillStyle = color.main;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawHandSkeleton(lms, color, thick, glow) {
+  const connections = [
+    [0,1],[1,2],[2,3],[3,4],
+    [0,5],[5,6],[6,7],[7,8],
+    [5,9],[9,10],[10,11],[11,12],
+    [9,13],[13,14],[14,15],[15,16],
+    [13,17],[17,18],[18,19],[19,20],[0,17]
+  ];
+  connections.forEach(([a,b]) => {
+    drawGlowLine(mirrorX(lms[a].x), scalY(lms[a].y), mirrorX(lms[b].x), scalY(lms[b].y), color, glow, thick);
+  });
+  const tips = [4,8,12,16,20];
+  lms.forEach((lm, i) => {
+    const isTip = tips.includes(i);
+    drawGlowDot(mirrorX(lm.x), scalY(lm.y), isTip ? thick*2.5 : thick*1.2, color, glow);
+  });
+}
+
+function drawFaceMesh(lms, color, thick, glow) {
+  const drawPath = (path) => {
+    if (!path.length) return;
+    ctx.save();
+    ctx.shadowColor = color.main;
+    ctx.shadowBlur = glow;
+    ctx.strokeStyle = color.main;
+    ctx.lineWidth = thick * 0.7;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    const first = lms[path[0]];
+    ctx.moveTo(mirrorX(first.x), scalY(first.y));
+    for (let i = 1; i < path.length; i++) {
+      const pt = lms[path[i]];
+      ctx.lineTo(mirrorX(pt.x), scalY(pt.y));
+    }
+    ctx.stroke();
+    ctx.restore();
+  };
+  drawPath(FACE_OUTLINE);
+  drawPath(FACE_LEFT_EYE);
+  drawPath(FACE_RIGHT_EYE);
+  drawPath(FACE_LIPS_OUTER);
+  drawPath(FACE_NOSE);
+}
+
+function drawSpiderweb(handLms, faceLms, color, thick, glow) {
+  if (!handLms || !faceLms) return;
+  const fingerTips = [4, 8, 12, 16, 20];
+  const faceAnchors = [
+    33,   // left eye outer
+    263,  // right eye outer
+    1,    // nose tip
+    61,   // mouth left
+    291,  // mouth right
+    10,   // forehead
+    152,  // chin
+    234,  // left cheek
+    454,  // right cheek
+  ];
+
+  fingerTips.forEach(tipIdx => {
+    const tip = handLms[tipIdx];
+    const tx = mirrorX(tip.x), ty = scalY(tip.y);
+    faceAnchors.forEach(fIdx => {
+      const fp = faceLms[fIdx];
+      const fx = mirrorX(fp.x), fy = scalY(fp.y);
+      ctx.save();
+      ctx.shadowColor = color.main;
+      ctx.shadowBlur = glow * 0.6;
+      ctx.strokeStyle = color.glow + '0.35)';
+      ctx.lineWidth = thick * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(tx, ty);
+      ctx.lineTo(fx, fy);
+      ctx.stroke();
+      ctx.restore();
+    });
+    drawGlowDot(tx, ty, thick * 2, color, glow * 1.5);
+  });
+}
+
+function drawFingerRays(lms, color, thick, glow) {
+  const tips = [4, 8, 12, 16, 20];
+  const bases = [2, 5, 9, 13, 17];
+  tips.forEach((tip, i) => {
+    const tx = mirrorX(lms[tip].x), ty = scalY(lms[tip].y);
+    const bx = mirrorX(lms[bases[i]].x), by = scalY(lms[bases[i]].y);
+    const dx = tx - bx, dy = ty - by;
+    const len = Math.sqrt(dx*dx+dy*dy) || 1;
+    const ext = 120;
+    ctx.save();
+    ctx.shadowColor = color.main;
+    ctx.shadowBlur = glow;
+    const grad = ctx.createLinearGradient(tx, ty, tx+dx/len*ext, ty+dy/len*ext);
+    grad.addColorStop(0, color.glow + '0.9)');
+    grad.addColorStop(1, color.glow + '0)');
+    ctx.strokeStyle = grad;
+    ctx.lineWidth = thick * 1.2;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(tx, ty);
+    ctx.lineTo(tx + dx/len*ext, ty + dy/len*ext);
+    ctx.stroke();
+    ctx.restore();
+  });
+}
+
+function classifyGesture(lms) {
+  const tips = [8,12,16,20], pips = [6,10,14,18];
+  const ext = tips.filter((t,i) => lms[t].y < lms[pips[i]].y).length;
+  const pinch = Math.hypot(lms[4].x-lms[8].x, lms[4].y-lms[8].y) < 0.06;
+  if (pinch) return 'PINCH';
+  if (ext === 4) return 'OPEN';
+  if (ext === 0) return 'FIST';
+  if (ext === 1) return 'POINT';
+  if (ext === 2) return 'PEACE';
+  return 'HAND';
+}
+
+let frameCount = 0;
+function render() {
+  requestAnimationFrame(render);
+  frameCount++;
+  ctx.clearRect(0, 0, W, H);
+
+  const color = getColor();
+  const glow = getGlow();
+  const thick = getThick();
+  const style = getStyle();
+
+  if (faceData) {
+    drawFaceMesh(faceData, color, thick, glow);
+  }
+
+  handsData.forEach(hd => {
+    const lms = hd.landmarks;
+    if (style === 'skeleton' || style === 'all') {
+      drawHandSkeleton(lms, color, thick, glow);
+    } else if (style !== 'rays') {
+      drawHandSkeleton(lms, color, thick, glow);
+    }
+    if ((style === 'spiderweb' || style === 'all') && faceData) {
+      drawSpiderweb(lms, faceData, color, thick, glow);
+    }
+    if (style === 'rays' || style === 'all') {
+      drawFingerRays(lms, color, thick, glow);
+    }
+  });
+
+  if (handsData.length > 0) {
+    const g = classifyGesture(handsData[0].landmarks);
+    document.getElementById('hud-hands').textContent = `HANDS: ${handsData.length}`;
+    document.getElementById('hud-gesture').textContent = `GESTURE: ${g}`;
+    document.getElementById('hud').textContent = `TRACKING ${handsData.length} HAND(S) — ${g} — ${style.toUpperCase()}`;
+  } else {
+    document.getElementById('hud-hands').textContent = 'HANDS: 0';
+    document.getElementById('hud-gesture').textContent = 'GESTURE: —';
+    document.getElementById('hud').textContent = faceData ? 'FACE LOCKED — SHOW YOUR HANDS' : 'SHOW FACE + HANDS TO CAMERA';
+  }
+  document.getElementById('hud-face').textContent = faceData ? 'FACE: LOCKED' : 'FACE: SEARCHING...';
+}
+render();
+
+async function init() {
+  const loadTxt = document.getElementById('load-txt');
+  try {
+    loadTxt.textContent = 'Requesting webcam...';
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720, facingMode: 'user' }, audio: false });
+    video.srcObject = stream;
+    await video.play();
+
+    loadTxt.textContent = 'Loading hand model...';
+    const hands = new Hands({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}` });
+    hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.5 });
+    hands.onResults(r => {
+      handsData = [];
+      if (r.multiHandLandmarks) {
+        r.multiHandLandmarks.forEach((lms, i) => handsData.push({ landmarks: lms }));
+      }
+    });
+
+    loadTxt.textContent = 'Loading face model...';
+    const faceMesh = new FaceMesh({ locateFile: f => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${f}` });
+    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+    faceMesh.onResults(r => {
+      faceData = r.multiFaceLandmarks && r.multiFaceLandmarks.length > 0 ? r.multiFaceLandmarks[0] : null;
+    });
+
+    let frameToggle = 0;
+    const camera = new Camera(video, {
+      onFrame: async () => {
+        frameToggle++;
+        if (frameToggle % 2 === 0) await hands.send({ image: video });
+        else await faceMesh.send({ image: video });
+      },
+      width: 1280, height: 720
+    });
+    await camera.start();
+
+    document.getElementById('overlay').style.display = 'none';
+  } catch (e) {
+    loadTxt.textContent = 'Error: ' + e.message;
+    document.querySelector('#overlay h1').textContent = 'CAMERA ERROR';
+  }
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
