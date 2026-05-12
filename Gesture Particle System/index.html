@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Gesture Particles</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+        #container { position: relative; width: 100vw; height: 100vh; }
+        .ui { position: absolute; top: 20px; left: 20px; color: white; pointer-events: none; z-index: 10; }
+        #video-container { position: absolute; bottom: 20px; right: 20px; width: 180px; border: 2px solid #555; border-radius: 10px; overflow: hidden; transform: scaleX(-1); opacity: 0.7; }
+        video { width: 100%; display: block; }
+        .hint { font-size: 0.9em; color: #aaa; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="ui">
+    <h2 style="margin:0;">Gesture Particle System</h2>
+    <p style="margin:5px 0;">Pinch: Change Shape | Open Palm: Enlarge/Explode</p>
+    <div id="status">Initializing AI...</div>
+    <div id="shape-name" style="margin-top:4px; font-size:0.9em; color:#7df;">Shape: Sphere</div>
+</div>
+
+<div id="video-container">
+    <video id="input_video"></video>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.158.0/three.min.js"></script>
+
+<script>
+    const videoElement = document.getElementById('input_video');
+    const statusText = document.getElementById('status');
+    const shapeNameText = document.getElementById('shape-name');
+    
+    // --- THREE.JS SETUP ---
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    camera.position.z = 40;
+
+    const PARTICLE_COUNT = 10000;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(PARTICLE_COUNT * 3);
+    const colors = new Float32Array(PARTICLE_COUNT * 3);
+    const targetPositions = new Float32Array(PARTICLE_COUNT * 3);
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+        positions[i*3] = (Math.random() - 0.5) * 100;
+        positions[i*3+1] = (Math.random() - 0.5) * 100;
+        positions[i*3+2] = (Math.random() - 0.5) * 100;
+        colors[i*3] = 0.5; colors[i*3+1] = 0.7; colors[i*3+2] = 1.0;
+    }
+
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+        size: 0.12,
+        vertexColors: true,
+        transparent: true,
+        blending: THREE.AdditiveBlending,
+        opacity: 0.8
+    });
+
+    const particleSystem = new THREE.Points(geometry, material);
+    scene.add(particleSystem);
+
+    // --- SHAPE TEMPLATES ---
+    const shapes = {
+        sphere: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const phi = Math.acos(-1 + (2 * i) / PARTICLE_COUNT);
+                const theta = Math.sqrt(PARTICLE_COUNT * Math.PI) * phi;
+                targetPositions[i*3] = 12 * Math.cos(theta) * Math.sin(phi);
+                targetPositions[i*3+1] = 12 * Math.sin(theta) * Math.sin(phi);
+                targetPositions[i*3+2] = 12 * Math.cos(phi);
+            }
+        },
+        heart: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const t = (i / PARTICLE_COUNT) * Math.PI * 2;
+                const x = 16 * Math.pow(Math.sin(t), 3);
+                const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+                targetPositions[i*3] = x * 0.8;
+                targetPositions[i*3+1] = y * 0.8;
+                targetPositions[i*3+2] = (Math.random() - 0.5) * 5;
+            }
+        },
+        saturn: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                if (i < PARTICLE_COUNT * 0.5) {
+                    const u = Math.random(), v = Math.random();
+                    const theta = 2 * Math.PI * u, phi = Math.acos(2 * v - 1);
+                    targetPositions[i*3] = 8 * Math.sin(phi) * Math.cos(theta);
+                    targetPositions[i*3+1] = 8 * Math.sin(phi) * Math.sin(theta);
+                    targetPositions[i*3+2] = 8 * Math.cos(phi);
+                } else {
+                    const r = 12 + Math.random() * 6;
+                    const angle = Math.random() * Math.PI * 2;
+                    targetPositions[i*3] = r * Math.cos(angle);
+                    targetPositions[i*3+1] = r * Math.sin(angle) * 0.2;
+                    targetPositions[i*3+2] = r * Math.sin(angle);
+                }
+            }
+        },
+        cube: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const face = Math.floor(Math.random() * 6);
+                const a = (Math.random() - 0.5) * 20;
+                const b = (Math.random() - 0.5) * 20;
+                const s = 10;
+                if (face === 0) { targetPositions[i*3] = s;  targetPositions[i*3+1] = a; targetPositions[i*3+2] = b; }
+                else if (face === 1) { targetPositions[i*3] = -s; targetPositions[i*3+1] = a; targetPositions[i*3+2] = b; }
+                else if (face === 2) { targetPositions[i*3] = a; targetPositions[i*3+1] = s; targetPositions[i*3+2] = b; }
+                else if (face === 3) { targetPositions[i*3] = a; targetPositions[i*3+1] = -s; targetPositions[i*3+2] = b; }
+                else if (face === 4) { targetPositions[i*3] = a; targetPositions[i*3+1] = b; targetPositions[i*3+2] = s; }
+                else { targetPositions[i*3] = a; targetPositions[i*3+1] = b; targetPositions[i*3+2] = -s; }
+            }
+        },
+        torus: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const u = Math.random() * Math.PI * 2;
+                const v = Math.random() * Math.PI * 2;
+                const R = 12, r = 4;
+                targetPositions[i*3] = (R + r * Math.cos(v)) * Math.cos(u);
+                targetPositions[i*3+1] = (R + r * Math.cos(v)) * Math.sin(u);
+                targetPositions[i*3+2] = r * Math.sin(v);
+            }
+        },
+        dna: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const t = (i / PARTICLE_COUNT) * Math.PI * 12 - Math.PI * 6;
+                const strand = i % 3;
+                const offset = strand === 2 ? 0 : strand * Math.PI;
+                const r = strand === 2 ? Math.random() * 2 : 6;
+                const angle = t + offset;
+                targetPositions[i*3] = r * Math.cos(angle);
+                targetPositions[i*3+1] = t * 1.5;
+                targetPositions[i*3+2] = r * Math.sin(angle);
+            }
+        },
+        galaxy: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const arm = Math.floor(Math.random() * 3);
+                const r = Math.pow(Math.random(), 0.6) * 18;
+                const spinAngle = r * 0.4 + (arm / 3) * Math.PI * 2;
+                const spread = (Math.random() - 0.5) * (r * 0.3 + 0.5);
+                targetPositions[i*3] = Math.cos(spinAngle) * r + spread;
+                targetPositions[i*3+1] = (Math.random() - 0.5) * 1.5;
+                targetPositions[i*3+2] = Math.sin(spinAngle) * r + spread;
+            }
+        },
+        pyramid: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const face = Math.floor(Math.random() * 5);
+                if (face < 4) {
+                    // Triangle faces
+                    const t = Math.random(), s = Math.random() * (1 - t);
+                    const apex = [0, 14, 0];
+                    const baseCorners = [
+                        [-10, -6, -10], [10, -6, -10], [10, -6, 10], [-10, -6, 10]
+                    ];
+                    const b1 = baseCorners[face], b2 = baseCorners[(face + 1) % 4];
+                    targetPositions[i*3]   = apex[0]*t + b1[0]*s + b2[0]*(1-t-s);
+                    targetPositions[i*3+1] = apex[1]*t + b1[1]*s + b2[1]*(1-t-s);
+                    targetPositions[i*3+2] = apex[2]*t + b1[2]*s + b2[2]*(1-t-s);
+                } else {
+                    // Base
+                    targetPositions[i*3]   = (Math.random() - 0.5) * 20;
+                    targetPositions[i*3+1] = -6;
+                    targetPositions[i*3+2] = (Math.random() - 0.5) * 20;
+                }
+            }
+        },
+        wave: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const x = (Math.random() - 0.5) * 40;
+                const z = (Math.random() - 0.5) * 40;
+                const y = Math.sin(x * 0.4) * Math.cos(z * 0.4) * 6;
+                targetPositions[i*3] = x;
+                targetPositions[i*3+1] = y;
+                targetPositions[i*3+2] = z;
+            }
+        },
+        klein: () => {
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const u = (i / PARTICLE_COUNT) * Math.PI * 2;
+                const v = Math.random() * Math.PI * 2;
+                let x, y, z;
+                if (u < Math.PI) {
+                    x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(u) * Math.cos(v);
+                    z = -8 * Math.sin(u) - 2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v);
+                } else {
+                    x = 3 * Math.cos(u) * (1 + Math.sin(u)) + (2 * (1 - Math.cos(u) / 2)) * Math.cos(v + Math.PI);
+                    z = -8 * Math.sin(u);
+                }
+                y = (2 * (1 - Math.cos(u) / 2)) * Math.sin(v);
+                targetPositions[i*3] = x * 0.7;
+                targetPositions[i*3+1] = z * 0.7;
+                targetPositions[i*3+2] = y * 0.7;
+            }
+        }
+    };
+
+    const shapeNames = {
+        sphere: 'Sphere',
+        heart: 'Heart',
+        saturn: 'Saturn',
+        cube: 'Cube',
+        torus: 'Torus',
+        dna: 'DNA Helix',
+        galaxy: 'Galaxy',
+        pyramid: 'Pyramid',
+        wave: 'Wave Field',
+        klein: 'Klein Bottle'
+    };
+
+    let currentShape = 'sphere';
+    shapes.sphere();
+
+    // --- INTERACTION STATE ---
+    let handX = 0, handY = 0, expansionFactor = 1.0;
+    let lastPinchTime = 0;
+
+    const hands = new Hands({locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`});
+    hands.setOptions({ maxNumHands: 1, modelComplexity: 1, minDetectionConfidence: 0.6, minTrackingConfidence: 0.6 });
+
+    hands.onResults((results) => {
+        statusText.innerText = "Tracking Ready";
+        if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+            const hand = results.multiHandLandmarks[0];
+            
+            // 1. Follow Index Finger
+            handX = (hand[8].x - 0.5) * -70; 
+            handY = (hand[8].y - 0.5) * -50;
+
+            // 2. Detect Pinch (Change Shape)
+            const pinchDist = Math.hypot(hand[4].x - hand[8].x, hand[4].y - hand[8].y);
+            if (pinchDist < 0.04 && Date.now() - lastPinchTime > 800) {
+                const keys = Object.keys(shapes);
+                currentShape = keys[(keys.indexOf(currentShape) + 1) % keys.length];
+                shapes[currentShape]();
+                shapeNameText.innerText = 'Shape: ' + shapeNames[currentShape];
+                lastPinchTime = Date.now();
+            }
+
+            // 3. Detect Palm Open (Enlarge / Expansion)
+            const palmSize = Math.hypot(hand[4].x - hand[20].x, hand[4].y - hand[20].y);
+            expansionFactor = palmSize > 0.15 ? 2.5 : 1.0;
+        }
+    });
+
+    const cameraInput = new Camera(videoElement, {
+        onFrame: async () => { await hands.send({image: videoElement}); },
+        width: 640, height: 480
+    });
+    cameraInput.start();
+
+    // --- ANIMATION ---
+    function animate() {
+        requestAnimationFrame(animate);
+
+        const posAttr = geometry.attributes.position;
+        const colAttr = geometry.attributes.color;
+
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+            const tx = targetPositions[i*3] * expansionFactor;
+            const ty = targetPositions[i*3+1] * expansionFactor;
+            const tz = targetPositions[i*3+2] * expansionFactor;
+
+            posAttr.array[i*3] += (tx - posAttr.array[i*3]) * 0.08;
+            posAttr.array[i*3+1] += (ty - posAttr.array[i*3+1]) * 0.08;
+            posAttr.array[i*3+2] += (tz - posAttr.array[i*3+2]) * 0.08;
+
+            const dx = handX - posAttr.array[i*3];
+            const dy = handY - posAttr.array[i*3+1];
+            posAttr.array[i*3] += dx * 0.02;
+            posAttr.array[i*3+1] += dy * 0.02;
+
+            if (expansionFactor > 1) {
+                colAttr.array[i*3] = 1.0;
+                colAttr.array[i*3+1] = 0.9;
+                colAttr.array[i*3+2] = 1.0;
+            } else {
+                colAttr.array[i*3] *= 0.98;
+                colAttr.array[i*3+1] = 0.6;
+                colAttr.array[i*3+2] = 1.0;
+            }
+        }
+
+        posAttr.needsUpdate = true;
+        colAttr.needsUpdate = true;
+        particleSystem.rotation.y += 0.003;
+        renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+</script>
+</body>
+</html>
