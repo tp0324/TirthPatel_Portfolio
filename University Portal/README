@@ -1,0 +1,4 @@
+University 7 is a full-stack academic administration-developed system.
+The project integrates a PostgreSQL relational database, an Express.js backend, and a TailwindCSS-driven frontend. The system manages students, instructors, courses, semesters, sections, payments, grades, and financial accounts. The goal is to simulate a
+university environment while demonstrating normalization, ACID transactions, database
+triggers, REST API design, and query-based reporting.
