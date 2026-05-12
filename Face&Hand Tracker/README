@@ -1,0 +1,4 @@
+It is a Real-time AI Face & Hand Orchestration System.
+It is a engineered high-performance computer vision application that simultaneously tracks 468 face mesh landmarks and 21 hand landmarks using Mediapipe and asynchronous camera streams.
+Libraries/Frameworks: Mediapipe (FaceMesh, Hands), CameraUtils.
+Core Concepts: Heuristic Classification, Multi-model Orchestration, Vector-based Visualization.
