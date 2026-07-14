@@ -1,4 +1,0 @@
-Developed an optimized and multi-modal video analytics pipeline using Python to automatically detect and classify major moments in FIFA World Cup matches without processing full-length video files. 
-The system implements an audio-first triage strategy, utilizing Librosa to extract the broadcast audio track and isolate high-energy crowd noise and commentary spikes to map out key event timestamps.
-OpenCV is then deployed to jump directly to these timestamps, analyzing on-screen pitch color density to detect broadcast cuts and replay indicators, while OpenAI’s Whisper model transcribes the local commentary to categorically classify events via text-based heuristics. 
-The entire architecture is wrapped in an interactive Streamlit web dashboard, providing users with a visual match-energy waveform map and a dynamic, timestamped highlight catalog.
